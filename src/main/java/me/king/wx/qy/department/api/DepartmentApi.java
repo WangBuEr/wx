@@ -75,9 +75,8 @@ public class DepartmentApi {
 	 * @return 是否增加成功
 	 */
 	public static Boolean addDept(final AccessToken token,final Department dept){
-		Map<String, String> params = getAddOrUpdateParams(dept);
 		String addDeptResult = HttpClientUtil.postJsonServiceResponseAsString(
-				DepartmentApi.ADD_DEPT_URL + token.getToken(), JSONObject.toJSONString(params), Charsets.UTF_8.name());
+				DepartmentApi.ADD_DEPT_URL + token.getToken(), JSONObject.toJSONString(dept), Charsets.UTF_8.name());
 		if(addDeptResult != null){
 			if(JSONObject.parseObject(addDeptResult).getInteger("errcode") == 0){
 				LOG.debug("创建部门成功");
@@ -100,9 +99,8 @@ public class DepartmentApi {
 	 * @return 是否成功
 	 */
 	public static Boolean updateDept(final AccessToken token,final Department dept){
-		Map<String, String> params = getAddOrUpdateParams(dept);
 		String addDeptResult = HttpClientUtil.postJsonServiceResponseAsString(
-				DepartmentApi.UPDATE_DEPT_URL + token.getToken(), JSONObject.toJSONString(params), Charsets.UTF_8.name());
+				DepartmentApi.UPDATE_DEPT_URL + token.getToken(), JSONObject.toJSONString(dept), Charsets.UTF_8.name());
 		if(addDeptResult != null){
 			if(JSONObject.parseObject(addDeptResult).getInteger("errcode") == 0){
 				LOG.debug("更新部门成功");
@@ -126,7 +124,7 @@ public class DepartmentApi {
 		Map<String, String> params = new HashMap<String, String>(2);
 		params.put("access_token", token.getToken());
 		params.put("id", deptId);
-		String delDeptResult = HttpClientUtil.getServiceResponseAsString(DEL_DEPT_URL, params);
+		String delDeptResult = HttpClientUtil.getServiceResponseAsString(DepartmentApi.DEL_DEPT_URL, params);
 		if(delDeptResult != null){
 			if(JSONObject.parseObject(delDeptResult).getInteger("errcode") == 0){
 				LOG.debug("删除部门成功");
@@ -140,18 +138,5 @@ public class DepartmentApi {
 			return false;
 		}
 		
-	}
-	/**
-	 * 获取新增或更新部门参数
-	 * @param dept 部门信息
-	 * @return 参数map
-	 */
-	private static Map<String, String> getAddOrUpdateParams(final Department dept) {
-		Map<String, String> params = new HashMap<String, String>(4);
-		params.put("name", dept.getName());
-		params.put("parentid", dept.getParentid());
-		params.put("order", dept.getOrder());
-		params.put("id", dept.getId());
-		return params;
 	}
 }

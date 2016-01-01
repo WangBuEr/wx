@@ -13,7 +13,7 @@ public class User {
 	/**
 	 * 成员UserID。对应管理端的帐号
 	 */
-	private String userId;
+	private String userid;
 	/**
 	 * 成员名称
 	 */
@@ -54,11 +54,12 @@ public class User {
 	 * 扩展属性
 	 */
 	private Extattr extattr;
-	public String getUserId() {
-		return userId;
+	
+	public String getUserid() {
+		return userid;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUserid(String userid) {
+		this.userid = userid;
 	}
 	public String getName() {
 		return name;
@@ -120,9 +121,33 @@ public class User {
 	public void setExtattr(Extattr extattr) {
 		this.extattr = extattr;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((userid == null) ? 0 : userid.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (userid == null) {
+			if (other.userid != null)
+				return false;
+		} else if (!userid.equals(other.userid))
+			return false;
+		return true;
+	}
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", name=" + name + ", department=" + department + ", position=" + position
+		return "User [userId=" + userid + ", name=" + name + ", department=" + department + ", position=" + position
 				+ ", mobile=" + mobile + ", gender=" + gender + ", email=" + email + ", weixinid=" + weixinid
 				+ ", avatar=" + avatar + ", status=" + status + ", extattr=" + extattr + "]";
 	}

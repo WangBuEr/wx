@@ -6,6 +6,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
+import me.king.wx.qy.department.vo.Department;
 import me.king.wx.token.AccessToken;
 
 /**  
@@ -30,7 +31,13 @@ public class DepartmentApiTest {
 
 	@Test
 	public void testAddDept() {
-		fail("Not yet implemented");
+		AccessToken token = AccessToken.getAccessToken("wx025aa188673d0d16", "SP0mzO3i9BZlx0WYlZ66d5ONMFC_mzdYdNEd6_DVkcqUvv5AelsrAlq8epQfiG-o");
+		Department dept = new Department();
+		dept.setId("28");
+		dept.setName("test");
+		dept.setParentid("1");
+		DepartmentApi.addDept(token, dept);
+		
 	}
 
 	@Test

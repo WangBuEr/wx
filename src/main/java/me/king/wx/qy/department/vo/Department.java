@@ -1,5 +1,7 @@
 package me.king.wx.qy.department.vo;
 
+import java.util.List;
+
 /**
  * @Title: Department.java
  * @Description: 部门
@@ -24,7 +26,10 @@ public class Department {
 	 * 排序
 	 */
 	private String order;
-	
+	/**
+	 * 子部门列表
+	 */
+	private List<Department> subDeptList;
 	public Department() {
 		super();
 	}
@@ -67,6 +72,39 @@ public class Department {
 
 	public void setOrder(String order) {
 		this.order = order;
+	}
+	
+	public List<Department> getSubDeptList() {
+		return subDeptList;
+	}
+
+	public void setSubDeptList(List<Department> subDeptList) {
+		this.subDeptList = subDeptList;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Department other = (Department) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 
 	@Override
