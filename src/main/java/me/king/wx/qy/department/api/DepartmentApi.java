@@ -24,25 +24,35 @@ import me.king.wx.token.AccessToken;
  */
 public class DepartmentApi {
 	private static final Logger LOG = LoggerFactory.getLogger(DepartmentApi.class);
+	/**
+	 * 获取部门列表URL
+	 */
 	private static final String GET_DEPT_LIST_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/list";
+	/**
+	 * 删除部门URL
+	 */
 	private static final String DEL_DEPT_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/delete";
+	/**
+	 * 增加部门URL
+	 */
 	private static final String ADD_DEPT_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/create?access_token=";
 	/**
-	 * 同步部门,会和企业号中的现有部门进行比较,交集部分更新,
-	 * 企业号中的差集删除,需要同步的差集新增
-	 * @param needDeptList 需要同步的部门列表
+	 * 更新部门URL
 	 */
-	public static void sync(List<Department> needDeptList){
-		
-	}
-	
+	private static final String UPDATE_DEPT_URL = "https://qyapi.weixin.qq.com/cgi-bin/department/update?access_token=";
+	/**
+	 * 获取部门列表
+	 * @param token 令牌
+	 * @param pid 父部门id,可为null,如果为null则获取所有部门列表
+	 * @return 部门列表
+	 */
 	public static List<Department> getDeptList(final AccessToken token,final String pid){
 		Map<String, String> params = new HashMap<String, String>(2);
 		params.put("access_token", token.getToken());
 		params.put("id", pid);
-		String getDeptListJson = HttpClientUtil.getServiceResponseAsString(GET_DEPT_LIST_URL, params);
-		if(getDeptListJson != null){
-			JSONObject getDeptListJsonObj = JSONObject.parseObject(getDeptListJson);
+		String getDeptListResult = HttpClientUtil.getServiceResponseAsString(GET_DEPT_LIST_URL, params);
+		if(getDeptListResult != null){
+			JSONObject getDeptListJsonObj = JSONObject.parseObject(getDeptListResult);
 			int errorCode = getDeptListJsonObj.getIntValue("errcode");
 			if(0 == errorCode){
 				String deptListJson = getDeptListJsonObj.getString("department");
@@ -50,7 +60,7 @@ public class DepartmentApi {
 				LOG.debug("获取部门列表成功:{}",result);
 				return result;
 			}else{
-				LOG.error("获取部门列表失败:{}",getDeptListJson);
+				LOG.error("获取部门列表失败:{}",getDeptListResult);
 				return Collections.emptyList();
 			}
 		}else{
@@ -58,39 +68,71 @@ public class DepartmentApi {
 			return Collections.emptyList();
 		}
 	}
-	
-	public static Boolean addDept(AccessToken token,Department dept){
-		Map<String, String> params = new HashMap<String, String>(5);
-		params.put("access_token", token.getToken());
-		params.put("name", dept.getName());
-		params.put("parentid", dept.getParentid());
-		params.put("order", dept.getOrder());
-		params.put("id", dept.getId());
+	/**
+	 * 增加部门
+	 * @param token 令牌
+	 * @param dept 部门
+	 * @return 是否增加成功
+	 */
+	public static Boolean addDept(final AccessToken token,final Department dept){
+		Map<String, String> params = getAddOrUpdateParams(dept);
 		String addDeptResult = HttpClientUtil.postJsonServiceResponseAsString(
 				DepartmentApi.ADD_DEPT_URL + token.getToken(), JSONObject.toJSONString(params), Charsets.UTF_8.name());
 		if(addDeptResult != null){
-			
+			if(JSONObject.parseObject(addDeptResult).getInteger("errcode") == 0){
+				LOG.debug("创建部门成功");
+				return true;
+			}else{
+				LOG.error("创建部门失败:{}",addDeptResult);
+				return false;
+			}
+		}else{
+			LOG.error("创建部门失败:请求服务失败");
+			return false;
 		}
-		return false;
 	}
+
 	
-	public static Boolean updateDept(AccessToken token,Department dept){
-		Map<String, String> params = new HashMap<String, String>(2);
-		params.put("access_token", token.getToken());
-		return false;
+	/**
+	 * 更新部门
+	 * @param token 令牌
+	 * @param dept 需要更新的部门信息
+	 * @return 是否成功
+	 */
+	public static Boolean updateDept(final AccessToken token,final Department dept){
+		Map<String, String> params = getAddOrUpdateParams(dept);
+		String addDeptResult = HttpClientUtil.postJsonServiceResponseAsString(
+				DepartmentApi.UPDATE_DEPT_URL + token.getToken(), JSONObject.toJSONString(params), Charsets.UTF_8.name());
+		if(addDeptResult != null){
+			if(JSONObject.parseObject(addDeptResult).getInteger("errcode") == 0){
+				LOG.debug("更新部门成功");
+				return true;
+			}else{
+				LOG.error("更新部门失败:{}",addDeptResult);
+				return false;
+			}
+		}else{
+			LOG.error("更新部门失败:请求服务失败");
+			return false;
+		}
 	}
-	
-	public static Boolean deleteDept(AccessToken token,String deptId){
+	/**
+	 * 删除部门
+	 * @param token 令牌
+	 * @param deptId 需要删除的部门id
+	 * @return 是否成功
+	 */
+	public static Boolean deleteDept(final AccessToken token,final String deptId){
 		Map<String, String> params = new HashMap<String, String>(2);
 		params.put("access_token", token.getToken());
 		params.put("id", deptId);
-		String delDeptJson = HttpClientUtil.getServiceResponseAsString(DEL_DEPT_URL, params);
-		if(delDeptJson != null){
-			if(JSONObject.parseObject(delDeptJson).getInteger("errcode") == 0){
+		String delDeptResult = HttpClientUtil.getServiceResponseAsString(DEL_DEPT_URL, params);
+		if(delDeptResult != null){
+			if(JSONObject.parseObject(delDeptResult).getInteger("errcode") == 0){
 				LOG.debug("删除部门成功");
 				return true;
 			}else{
-				LOG.error("删除部门失败:{}",delDeptJson);
+				LOG.error("删除部门失败:{}",delDeptResult);
 				return false;
 			}
 		}else{
@@ -99,5 +141,17 @@ public class DepartmentApi {
 		}
 		
 	}
-	
+	/**
+	 * 获取新增或更新部门参数
+	 * @param dept 部门信息
+	 * @return 参数map
+	 */
+	private static Map<String, String> getAddOrUpdateParams(final Department dept) {
+		Map<String, String> params = new HashMap<String, String>(4);
+		params.put("name", dept.getName());
+		params.put("parentid", dept.getParentid());
+		params.put("order", dept.getOrder());
+		params.put("id", dept.getId());
+		return params;
+	}
 }
