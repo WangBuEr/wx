@@ -82,11 +82,11 @@ public class DepartmentApi {
 				LOG.debug("创建部门成功");
 				return true;
 			}else{
-				LOG.error("创建部门失败:{}",addDeptResult);
+				LOG.error("创建部门失败:{}-{}",dept,addDeptResult);
 				return false;
 			}
 		}else{
-			LOG.error("创建部门失败:请求服务失败");
+			LOG.error("创建部门失败:请求服务失败-{}",dept);
 			return false;
 		}
 	}
@@ -106,11 +106,11 @@ public class DepartmentApi {
 				LOG.debug("更新部门成功");
 				return true;
 			}else{
-				LOG.error("更新部门失败:{}",addDeptResult);
+				LOG.error("更新部门失败:{}-{}",dept,addDeptResult);
 				return false;
 			}
 		}else{
-			LOG.error("更新部门失败:请求服务失败");
+			LOG.error("更新部门失败:请求服务失败-{}",dept);
 			return false;
 		}
 	}
@@ -130,11 +130,11 @@ public class DepartmentApi {
 				LOG.debug("删除部门成功");
 				return true;
 			}else{
-				LOG.error("删除部门失败:{}",delDeptResult);
+				LOG.error("删除部门失败:{}-{}",deptId,delDeptResult);
 				return false;
 			}
 		}else{
-			LOG.error("删除部门失败:请求服务失败");
+			LOG.error("删除部门失败:请求服务失败-{}",deptId);
 			return false;
 		}
 		

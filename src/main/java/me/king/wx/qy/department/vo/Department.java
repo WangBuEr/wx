@@ -34,6 +34,11 @@ public class Department {
 		super();
 	}
 	
+	public Department(String id) {
+		super();
+		this.id = id;
+	}
+
 	public Department(String id, String name, String parentid, String order) {
 		super();
 		this.id = id;

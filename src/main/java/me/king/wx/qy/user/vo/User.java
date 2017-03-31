@@ -55,6 +55,18 @@ public class User {
 	 */
 	private Extattr extattr;
 	
+	public User() {
+		super();
+	}
+	public User(String userid, String name, List<String> department, String mobile, String gender, String weixinid) {
+		super();
+		this.userid = userid;
+		this.name = name;
+		this.department = department;
+		this.mobile = mobile;
+		this.gender = gender;
+		this.weixinid = weixinid;
+	}
 	public String getUserid() {
 		return userid;
 	}

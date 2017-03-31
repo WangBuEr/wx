@@ -1,7 +1,6 @@
 package me.king.wx.qy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import me.king.wx.qy.department.api.DepartmentApi;
@@ -25,12 +24,22 @@ public class AddressBookManager {
 	 * @param appUserList 应用用户列表
 	 */
 	public static void sync(AccessToken token,List<Department> appDeptList,List<User> appUserList){
+		//微信企业号中的部门列表
 		List<Department> wxDeptList = DepartmentApi.getDeptList(token,"1");
+		//移除微信企业号中的根部门
+		wxDeptList.remove(new Department("1"));
+		//微信企业号中的用户列表
 		List<User> wxUserList = UserApi.getDeptUsers(token, "1", true, 0);
-		deleteMany(token, appDeptList, appUserList, wxDeptList, wxUserList);
+		//需要删除的部门列表
+		List<Department> delDeptList = getMany(wxDeptList,appDeptList);
+		//需要更新的用户列表
+		List<User> delUserList = getMany(wxUserList, appUserList);
+		//需要更新的部门列表
 		List<Department> updateDepartmentList =  getUpdate(wxDeptList,appDeptList);
+		//需要更新的用户列表
 		List<User> updateUserList = getUpdate(wxUserList,appUserList);
 		List<Department> deptTree = buildDeptLevel(appDeptList);
+		
 		for(Department dept : deptTree){
 			saveOrUpdateDept(token,dept,updateDepartmentList);
 		}
@@ -129,37 +138,14 @@ public class AddressBookManager {
 	}
 
 	/**
-	 * 删除微信企业号中多余的部门和用户
-	 * @param token
-	 * @param appDeptList
-	 * @param appUserList
-	 * @param wxDeptList
-	 * @param wxUserList
-	 */
-	private static void deleteMany(AccessToken token, List<Department> appDeptList, List<User> appUserList,
-			List<Department> wxDeptList, List<User> wxUserList) {
-		//微信企业号中多的部门列表
-		List<Department> wxManyDeptList = getMany(wxDeptList,appDeptList);
-		//微信企业号中多的用户列表
-		List<User> wxManyUserList = getMany(wxUserList, appUserList);
-		//删除多余的微信企业号中的用户
-		for(User user : wxManyUserList){
-			UserApi.deleteUser(token, user.getUserid());
-		}
-		//删除多余的微信企业号中的部门
-		for(Department dept : wxManyDeptList){
-			DepartmentApi.deleteDept(token, dept.getId());
-		}
-	}
-	/**
 	 * 获取多余的数据
 	 * @param wxList 微信企业号数据
 	 * @param appList app端数据
 	 * @return 多余的数据
 	 */
 	private static <T> List<T> getMany(List<T> wxList,List<T> appList){
-		List<T> result = new ArrayList<T>();
-		Collections.copy(result, wxList);
+		List<T> result = new ArrayList<T>(appList.size());
+		result.addAll(wxList);
 		result.removeAll(appList);
 		return result;
 	}
@@ -170,8 +156,8 @@ public class AddressBookManager {
 	 * @return 需要更新的数据
 	 */
 	private static <T> List<T> getUpdate(List<T> wxList,List<T> appList) {
-		List<T> result = new ArrayList<T>();
-		Collections.copy(result, wxList);
+		List<T> result = new ArrayList<T>(appList.size());
+		result.addAll(wxList);
 		result.retainAll(appList);
 		return result;
 	}
