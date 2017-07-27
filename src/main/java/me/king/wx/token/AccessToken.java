@@ -54,10 +54,10 @@ public class AccessToken {
 		params.put("corpid", corpid);
 		params.put("corpsecret", corpsecret);
 		String tokenJson = HttpClientUtil.getServiceResponseAsString(AccessToken.ACCESS_TOKEN_URL, params);
-		if(tokenJson != null ){
+		if(tokenJson != null && !"".equals(tokenJson)){
 			JSONObject jsonObj = JSONObject.parseObject(tokenJson);
-			String token = jsonObj.getString("access_token");
-			if(token != null){
+			if(jsonObj.containsKey("access_token") &&  jsonObj.getString("access_token") != null){
+				String token = jsonObj.getString("access_token");
 				long expires = jsonObj.getLongValue("expires_in");
 				AccessToken result = new AccessToken(token, expires, System.currentTimeMillis());
 				LOG.debug("获取微信AccessToken成功:{}",result);
